@@ -1,0 +1,81 @@
+#sommeResult_dv {
+    background: #98bf21;
+    /* height: 100px;
+    width: 100px; */
+    min-width: 100px;
+    min-height: 100px;
+    float: left;
+    margin: 10px;
+    /* margin: 30px; */
+    /* display: none;
+    visibility: hidden; */
+    /* position: absolute; */
+    /* box-shadow: 10px 10px grey; */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#produitResult_dv {
+    background: #880Ebb;
+    /* height: 100px;
+    width: 100px; */
+    min-width: 100px;
+    min-height: 100px;
+    float: left;
+    margin: 10px;
+    /* margin: 30px; */
+    /* display: none;
+    visibility: hidden; */
+    /* position: absolute; */
+    /* box-shadow: 10px 10px grey; */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#inverseResultA_dv,
+#inverseResultB_dv {
+    background: #ffaffa;
+    /* height: 100px;
+    width: 100px; */
+    min-width: 100px;
+    min-height: 100px;
+    float: left;
+    margin: 10px;
+    /* margin: 30px; */
+    /* display: none;
+    visibility: hidden; */
+    /* position: absolute; */
+    /* box-shadow: 10px 10px grey; */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#matContainer_dv {
+    width: "100%";
+    background: blueviolet;
+    padding: 20px;
+}
+
+#mat1Container_dv,
+#mat2Container_dv {
+    float: left;
+    margin: 20px;
+    min-height: 20px;
+    min-width: 20px;
+    background: #87CEFA;
+    box-shadow: 10px 10px grey;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#result_dv {
+    width: 800;
+    height: 800;
+    background: #eeeeee;
+    position: absolute;
+}
+
+.cells {
+    width: 1000px;
+}
+
+.resultCells_td {
+    width: 50px;
+    margin: 10px;
+}

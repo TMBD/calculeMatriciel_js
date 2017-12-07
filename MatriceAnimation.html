@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="animations.js"></script>
+    <script type="text/javascript" src="Treatement.js"></script>
+    <script type="text/javascript" src="inverseMatriceFunctions.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="Style.css">
+    <script>
+        // window.onload = function() {
+        //     if (annyang) {
+        //         var commands = {
+        //             'play video': function() {
+        //                 console.log('Vidéo en play...');
+        //             }
+        //         }
+        //         annyang.addCommands(commands);
+        //         annyang.start();
+
+        //     } else console.log('Pas correct');
+        // }
+
+        $(document).ready(function() {
+            $("#sommeResult_dv").hide();
+            $("#produitResult_dv").hide();
+            $("#inverseResultA_dv").hide();
+            $("#inverseResultB_dv").hide();
+            var nbLine = 0;
+            nbLine_tmp = 0;
+            isNbLineNumber = false;
+            currentMatrice = "A";
+            currentInput = null;
+            i_a = 1;
+            j_a = 1;
+            i_b = 1;
+            j_b = 1;
+
+
+            if (annyang) {
+                // Let's define a command.
+                var commands = {
+                    ' (taille) matrice :nb': function(nb) {
+                        console.log(nb);
+                        nbLine_tmp = nb;
+                        document.getElementById("tailleMatrice_ip").value = nb;
+                        //nbLine = prompt("Entrez la taille de votre matrice.", nb);
+                    },
+
+                    '(ok) (c\'est bon) (fini)': function() {
+                        console.log("ok");
+                        genererTableau();
+                    },
+                };
+                annyang.setLanguage('fr-FR');
+                // Add our commands to annyang
+                annyang.addCommands(commands);
+
+                // Start listening.
+                annyang.start();
+            }
+
+
+            function annyang2() {
+
+                if (annyang) {
+                    var commands = {
+                        'focus': function() {
+                            focusInputs();
+                        },
+                        'saut': function() {
+                            if (currentMatrice == "A") currentMatrice = "B";
+                            else currentMatrice = "A";
+                            focusInputs();
+                        },
+                        'suivant': function() {
+                            if (currentMatrice == "A") {
+                                j_a++;
+                                if (j_a > nbLine) {
+                                    j_a = 1;
+                                    i_a++;
+                                    if (i_a > nbLine) {
+                                        i_a = 1;
+                                        currentMatrice = "B";
+                                    }
+                                }
+                            } else {
+                                j_b++;
+                                if (j_b > nbLine) {
+                                    j_b = 1;
+                                    i_b++;
+                                    if (i_b > nbLine) {
+                                        i_b = 1;
+                                        currentMatrice = "A";
+                                    }
+                                }
+                            }
+
+                            focusInputs();
+                        },
+                        'précédant': function() {
+                            if (currentMatrice == "A") {
+                                j_a--;
+                                if (j_a < 1) {
+                                    j_a = nbLine;
+                                    i_a--;
+                                    if (i_a < 1) {
+                                        i_a = nbLine;
+                                        currentMatrice = "B";
+                                    }
+                                }
+                            } else {
+                                j_b--;
+                                if (j_b < 1) {
+                                    j_b = nbLine;
+                                    i_b--;
+                                    if (i_b < 1) {
+                                        i_b = nbLine;
+                                        currentMatrice = "A";
+                                    }
+                                }
+                            }
+
+                            focusInputs();
+                        },
+
+                        'valeur :nb': function(nb) {
+                            if (!(nb == "zéro" || nb == "un" || nb == "une" || nb == "de" || nb == "toi" || nb == "si" || nb == "sie" || nb == "cette" || nb == "cet" || nb == "c'est" || nb == "oui" || nb == "ne" || nb == "neuve" || nb == "noeuds"))
+                                remplirInputs(nb);
+                        },
+                        'valeur zéro': function() {
+                            currentInput.value = 0;
+                        },
+
+                        'valeur un': function() {
+                            currentInput.value = 1;
+                        },
+                        'valeur une': function() {
+                            currentInput.value = 1;
+                        },
+                        'valeur de': function() {
+                            currentInput.value = 2;
+                        },
+                        'valeur toi': function() {
+                            currentInput.value = 3;
+                        },
+                        'valeur si ': function() {
+                            currentInput.value = 6;
+                        },
+                        'valeur sie': function() {
+                            currentInput.value = 6;
+                        },
+                        'valeur cette': function() {
+                            currentInput.value = 7;
+                        },
+                        'valeur cet': function() {
+                            currentInput.value = 7;
+                        },
+                        'valeur c\'est': function() {
+                            currentInput.value = 7;
+                        },
+                        'valeur oui ': function() {
+                            currentInput.value = 8;
+                        },
+                        'valeur noeuds ': function() {
+                            currentInput.value = 9;
+                        },
+                        'valeur neuve': function() {
+                            currentInput.value = 9;
+                        },
+                        'valeur ne': function() {
+                            currentInput.value = 9;
+                        },
+
+                        'résultat': function() {
+                            mainFunction();
+                        },
+                        'calculé': function() {
+                            mainFunction();
+                        },
+
+
+                    };
+                    annyang.setLanguage('fr-FR');
+                    annyang.addCommands(commands);
+                    annyang.start();
+                }
+
+            }
+
+
+            function annyangAnimation() {
+                if (annyang) {
+                    // Let's define a command.
+                    var commands = {
+                        '(à) (a) gauche': function() {
+                            moveLeft("#result_dv")
+                        },
+                        '(à) (a) droite': function() {
+                            moveRight("#result_dv")
+                        },
+                        '(à) (a) droit': function() {
+                            moveRight("#result_dv")
+                        },
+                        '(en) haut': function() {
+                            moveUp("#result_dv")
+                        },
+                        '(en) eau': function() {
+                            moveUp("#result_dv")
+                        },
+                        '(en) bas': function() {
+                            moveDown("#result_dv")
+                        },
+                    };
+                    annyang.setLanguage('fr-FR');
+                    annyang.addCommands(commands);
+                    annyang.start();
+                }
+
+
+
+            }
+            ///////////////////////////////////////////
+
+            function genererTableau() {
+                if (!(isNaN(nbLine_tmp) || nbLine_tmp == null || nbLine_tmp == "")) {
+                    nbLine = nbLine_tmp;
+                    isNbLineNumber = true;
+                    table1_html = document.getElementById("table1");
+                    table2_html = document.getElementById("table2");
+                    generateTable(table1_html, nbLine, "m1");
+                    generateTable(table2_html, nbLine, "m2");
+                    i_a = 1;
+                    j_a = 1;
+                    i_b = 1;
+                    j_b = 1;
+                    currentMatrice = "A";
+                    focusInputs();
+                    annyang2();
+                } else(window.alert("TAILLE MATRICE INCORRECT !"));
+            }
+
+            ///////////////////////////////////////////
+            function focusInputs() {
+                if (currentMatrice == "A") {
+                    id = currentMatrice + "" + (i_a - 1) + "" + (j_a - 1);
+                    console.log(id);
+                    currentInput = document.getElementById(id);
+                    currentInput.focus();
+                } else {
+                    id = currentMatrice + "" + (i_b - 1) + "" + (j_b - 1);
+                    console.log(id);
+                    currentInput = document.getElementById(id);
+                    currentInput.focus();
+                }
+            }
+
+            function remplirInputs(nb) {
+                currentInput.value = nb;
+            }
+            $(document).keydown(function(event) {
+                //keyDirectionPressed(event, "#sommeResult_dv");
+                keyDirectionPressed(event, "#result_dv");
+            });
+
+            /////////////////////////////////////////////
+
+            $("#ok_bt").click(function() {
+                console.log("ok");
+                nbLine_tmp = Number(document.getElementById("tailleMatrice_ip").value);
+                genererTableau();
+            });
+
+            $("#result_bt").click(function() {
+                mainFunction();
+            });
+
+            function mainFunction() {
+                matrice_A = getMatrice(nbLine, "A");
+                matrice_B = getMatrice(nbLine, "B");
+                if (matrice_A && matrice_B) {
+                    $(".rs").css({
+                        "width": "600px",
+                        "height": "600px"
+                    });
+                    sommeResult = sommeMatrice(matrice_A, matrice_B, nbLine);
+                    sommeResult = cleanMatrice(sommeResult, nbLine);
+                    produitResult = produitMatrice(matrice_A, matrice_B, nbLine);
+                    produitResult = cleanMatrice(produitResult, nbLine);
+
+                    somme_html_dv = document.getElementById("sommeResult_table");
+                    produit_html_dv = document.getElementById("produitResult_table");
+                    generateResultView(sommeResult, nbLine, somme_html_dv, "A + B");
+                    generateResultView(produitResult, nbLine, produit_html_dv, "A x B");
+
+                    $("#sommeResult_dv").show();
+                    $("#produitResult_dv").show();
+                    //////////////////////////////////////////////////////////////////:
+                    messageInversion = "";
+
+                    inverseA_html_dv = document.getElementById("inverseResultA_table");
+                    inverse_A = inverseMatrice(matrice_A, nbLine);
+                    if (inverse_A) {
+                        inverse_A = cleanMatrice(inverse_A, nbLine);
+                        generateResultView(inverse_A, nbLine, inverseA_html_dv, "Inverse de A");
+                        $("#inverseResultA_dv").show();
+                    } else messageInversion = "La matrice A n'est pas invesible";
+
+
+
+                    inverseB_html_dv = document.getElementById("inverseResultB_table");
+                    inverse_B = inverseMatrice(matrice_B, nbLine);
+                    if (inverse_B) {
+                        inverse_B = cleanMatrice(inverse_B, nbLine);
+                        generateResultView(inverse_B, nbLine, inverseB_html_dv, "Inverse de B");
+                        $("#inverseResultB_dv").show();
+                    } else if (messageInversion == "") messageInversion = "La matrice B n'est pas invesible";
+                    else messageInversion = "Les matrices A et B ne sont pas inversibles";
+                    if (!messageInversion == "") window.alert(messageInversion);
+
+                    //test = lineOfFirstZero(matrice_A, nbLine, 2, 2);
+                    //if (test) window.alert(test);
+                    //else window.alert("Thie columne haven't zero");
+                    ////////////////////////////////////////////////////////////
+
+                    annyangAnimation();
+
+
+                } else(window.alert("VEUILLEZ SAISIR CORRECTEMENT LES MATRICES !"));
+
+            }
+
+
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id="matContainer_dv">
+        Taille : <input type="number" id="tailleMatrice_ip"><button id="ok_bt">OK</button>
+
+    </div>
+    <div id="mat1Container_dv">
+        <table id="table1">
+        </table>
+    </div>
+
+    <div id="mat2Container_dv">
+        <table id="table2">
+        </table>
+    </div>
+    <!-- ************************************************************ -->
+    </br>
+    <div>
+        <button id="result_bt">Calculer</button>
+    </div>
+    <!-- ************************************************************ -->
+    <div id="result_dv">
+        <div id="sommeResult_dv" ,class="rs">
+            <table id="sommeResult_table">
+            </table>
+        </div>
+        <div id="produitResult_dv" ,class="rs">
+            <table id="produitResult_table">
+            </table>
+        </div>
+        <div id="inverseResultA_dv" ,class="rs">
+            <table id="inverseResultA_table">
+            </table>
+        </div>
+        <div id="inverseResultB_dv" ,class="rs">
+            <table id="inverseResultB_table">
+            </table>
+        </div>
+    </div>
+    <!-- ************************************************************ -->
+</body>
+
+</html>
